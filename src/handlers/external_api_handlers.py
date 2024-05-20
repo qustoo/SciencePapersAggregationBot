@@ -26,3 +26,4 @@ async def run_search_science_api(message: Message):
 
 # TODO
 # добавить пагинацию по статья
+# sometext example

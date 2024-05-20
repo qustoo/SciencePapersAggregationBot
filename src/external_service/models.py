@@ -27,7 +27,6 @@ class AuthorshipData(BaseModel):
 class Biblio(BaseModel):
     first_page: Optional[str] = None
     last_page: Optional[str] = None
-    page_count: Optional[int] = None
 
     @computed_field
     def page_count(self) -> int:

@@ -39,4 +39,4 @@ async def base_searching(message: Message):
 # cancel searching
 @user_router.message(F.text == LEXICON_RUS['cancel'])
 async def cancel_searching(message: Message):
-    await message.reply(text='Может в другой раз)', reply_markup=ReplyKeyboardRemove())
+    await message.reply(text='Может в другой раз updated)', reply_markup=ReplyKeyboardRemove())

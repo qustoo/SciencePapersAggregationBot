@@ -22,8 +22,3 @@ async def run_search_science_api(message: Message):
         pages_max=max_pages,
     )
     print(f'{science_papers=}')
-
-
-# TODO
-# добавить пагинацию по статья
-# sometext example

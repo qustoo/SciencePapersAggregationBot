@@ -1,0 +1,16 @@
+LEXICON_RUS = {
+    'start': 'Начнем работу!',
+    'help': 'Помощь',
+    'cancel': 'Отмена',
+    'entered_parameters': 'Проверить введеные данные',
+    'finished': 'Закончить ввод данных',
+    'back': 'Вернуться к предыдущему меню',
+    'terms': 'Название/темы статьи',
+    'source_published': 'Журнал/издание, где опубликована статья',
+    'authors': 'Автор(ы)',
+    'years': 'Год выпуска',
+    'pages': 'Количество страниц',
+    'start_fill_based_parameters': 'Ввести данные для поиска',
+    'back_to_based_searching_keyboard': 'Вернуться к базовым параметрам',
+    'run_aggregation_papers': 'Найти',
+}

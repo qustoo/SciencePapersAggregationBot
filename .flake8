@@ -1,0 +1,8 @@
+[flake8]
+ignore = E226,E302,E41,W291
+max-line-length = 120
+exclude =
+    venv
+    tests/*,
+    __pycache__
+    __init__.py

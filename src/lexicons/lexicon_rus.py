@@ -2,6 +2,8 @@ LEXICON_RUS = {
     'start': 'Начнем работу!',
     'help': 'Помощь',
     'cancel': 'Отмена',
+    'read': 'Читать найденные работы',
+    'favorite': 'Избранные работы',
     'entered_parameters': 'Проверить введеные данные',
     'finished': 'Закончить ввод данных',
     'back': 'Вернуться к предыдущему меню',
@@ -13,4 +15,6 @@ LEXICON_RUS = {
     'start_fill_based_parameters': 'Ввести данные для поиска',
     'back_to_based_searching_keyboard': 'Вернуться к базовым параметрам',
     'run_aggregation_papers': 'Найти',
+    'backward': '<<',
+    'forward': '>>'
 }

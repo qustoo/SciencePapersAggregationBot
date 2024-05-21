@@ -4,22 +4,25 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import Message
 
+from src.database import AsyncBotDatabase
 from src.filters.searching_parameters_filters import (
     PagesSearchingParametersFilters, TextSearchingParametersFilters,
     YearsSearchingParametersFilters)
 from src.keybords.service import (finished_entering_parameters_keyboards,
-                                  get_searching_parameters_keyboard, get_started_keyboard)
+                                  get_searching_parameters_keyboard,
+                                  get_started_keyboard)
 from src.lexicons.lexicon_rus import LEXICON_RUS
-from src.states.science_paper_states import ScienceSearchingParametersStates
-from src.utils.enum_states import StatesName
+from src.states.papers_parameters_states import \
+    ScienceSearchingParametersStates
+from src.utils.states_enums import StatesName
 from src.utils.states_utils import (update_state_data,
                                     upload_data_and_reset_state)
 
-searching_states_router = Router()
+router = Router()
 
 
 # terms
-@searching_states_router.message(StateFilter(default_state), F.text == LEXICON_RUS['terms'])
+@router.message(StateFilter(default_state), F.text == LEXICON_RUS['terms'])
 async def process_terms_parameters(message: Message, state: FSMContext):
     await message.answer(
         text='Введите ключевые слова(machine learning): ',
@@ -28,7 +31,7 @@ async def process_terms_parameters(message: Message, state: FSMContext):
     await state.set_state(ScienceSearchingParametersStates.terms)
 
 
-@searching_states_router.message(
+@router.message(
     StateFilter(ScienceSearchingParametersStates.terms),
     ~F.text.in_({LEXICON_RUS['finished'], LEXICON_RUS['back']}),
     TextSearchingParametersFilters()
@@ -44,7 +47,7 @@ async def process_terms_sent_parameters(message: Message, valid_parameters: list
 
 
 # source_published
-@searching_states_router.message(StateFilter(default_state), F.text == LEXICON_RUS['source_published'])
+@router.message(StateFilter(default_state), F.text == LEXICON_RUS['source_published'])
 async def process_source_published_parameters(message: Message, state: FSMContext):
     await message.answer(
         text='Введите название журнала(elsavier): ',
@@ -53,7 +56,7 @@ async def process_source_published_parameters(message: Message, state: FSMContex
     await state.set_state(ScienceSearchingParametersStates.source_published)
 
 
-@searching_states_router.message(
+@router.message(
     StateFilter(ScienceSearchingParametersStates.source_published),
     ~F.text.in_({LEXICON_RUS['finished'], LEXICON_RUS['back']}),
     TextSearchingParametersFilters()
@@ -69,7 +72,7 @@ async def process_source_published_sent_parameters(message: Message, valid_param
 
 
 # authors
-@searching_states_router.message(StateFilter(default_state), F.text == LEXICON_RUS['authors'])
+@router.message(StateFilter(default_state), F.text == LEXICON_RUS['authors'])
 async def process_authors_parameters(message: Message, state: FSMContext):
     await message.answer(
         text='Введите авторов(John Smith, Ivan Susanin): ',
@@ -78,7 +81,7 @@ async def process_authors_parameters(message: Message, state: FSMContext):
     await state.set_state(ScienceSearchingParametersStates.authors)
 
 
-@searching_states_router.message(
+@router.message(
     StateFilter(ScienceSearchingParametersStates.authors),
     ~F.text.in_({LEXICON_RUS['finished'], LEXICON_RUS['back']}),
     TextSearchingParametersFilters()
@@ -94,7 +97,7 @@ async def process_authors_sent_parameters(message: Message, valid_parameters: li
 
 
 # years
-@searching_states_router.message(StateFilter(default_state), F.text == LEXICON_RUS['years'])
+@router.message(StateFilter(default_state), F.text == LEXICON_RUS['years'])
 async def process_years_parameters(message: Message, state: FSMContext):
     await message.answer(
         text='Введите год выхода работы (1999, или 1999-2010):',
@@ -103,7 +106,7 @@ async def process_years_parameters(message: Message, state: FSMContext):
     await state.set_state(ScienceSearchingParametersStates.years)
 
 
-@searching_states_router.message(
+@router.message(
     StateFilter(ScienceSearchingParametersStates.years),
     ~F.text.in_({LEXICON_RUS['finished'], LEXICON_RUS['back']}),
     YearsSearchingParametersFilters()
@@ -119,7 +122,7 @@ async def process_years_sent_parameters(message: Message, valid_parameters: list
 
 
 # pages
-@searching_states_router.message(StateFilter(default_state), F.text == LEXICON_RUS['pages'])
+@router.message(StateFilter(default_state), F.text == LEXICON_RUS['pages'])
 async def process_pages_parameters(message: Message, state: FSMContext):
     await message.answer(
         text='Введите количество страниц(50, или 50-100)',
@@ -128,7 +131,7 @@ async def process_pages_parameters(message: Message, state: FSMContext):
     await state.set_state(ScienceSearchingParametersStates.pages)
 
 
-@searching_states_router.message(
+@router.message(
     StateFilter(ScienceSearchingParametersStates.pages),
     ~F.text.in_({LEXICON_RUS['finished'], LEXICON_RUS['back']}),
     PagesSearchingParametersFilters()
@@ -144,31 +147,32 @@ async def process_pages_sent_parameters(message: Message, valid_parameters: list
 
 
 # back button to choose topic entering words
-@searching_states_router.message(
+@router.message(
     StateFilter(ScienceSearchingParametersStates.source_published),
     F.text == LEXICON_RUS['back']
 )
-@searching_states_router.message(StateFilter(ScienceSearchingParametersStates.terms), F.text == LEXICON_RUS['back'])
-@searching_states_router.message(StateFilter(ScienceSearchingParametersStates.authors), F.text == LEXICON_RUS['back'])
-@searching_states_router.message(StateFilter(ScienceSearchingParametersStates.years), F.text == LEXICON_RUS['back'])
-@searching_states_router.message(StateFilter(ScienceSearchingParametersStates.pages), F.text == LEXICON_RUS['back'])
+@router.message(StateFilter(ScienceSearchingParametersStates.terms), F.text == LEXICON_RUS['back'])
+@router.message(StateFilter(ScienceSearchingParametersStates.authors), F.text == LEXICON_RUS['back'])
+@router.message(StateFilter(ScienceSearchingParametersStates.years), F.text == LEXICON_RUS['back'])
+@router.message(StateFilter(ScienceSearchingParametersStates.pages), F.text == LEXICON_RUS['back'])
 async def back_to_basic_keyboard(message: Message, state: FSMContext):
     await state.set_state(default_state)
     await message.answer(text='Возвращаемся к выбору тему', reply_markup=get_searching_parameters_keyboard())
 
 
 # finish entering parameters
-@searching_states_router.message(StateFilter(default_state), F.text == LEXICON_RUS['finished'])
-async def finish_entering_parameters(message: Message, state: FSMContext):
+@router.message(StateFilter(default_state), F.text == LEXICON_RUS['finished'])
+async def finish_entering_parameters(message: Message, state: FSMContext, database: AsyncBotDatabase):
     await upload_data_and_reset_state(
         user_id=message.from_user.id,
-        state=state
+        state=state,
+        database=database
     )
     await message.answer(text='finish entering parameters message', reply_markup=get_started_keyboard())
 
 
 # invalid behavior
-@searching_states_router.message(
+@router.message(
     StateFilter(
         ScienceSearchingParametersStates.terms,
         ScienceSearchingParametersStates.source_published,

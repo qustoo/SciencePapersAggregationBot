@@ -1,4 +1,6 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                           KeyboardButton, ReplyKeyboardMarkup)
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from src.lexicons.lexicon_rus import LEXICON_RUS
 
@@ -37,4 +39,28 @@ def get_searching_parameters_keyboard() -> ReplyKeyboardMarkup:
 def finished_entering_parameters_keyboards() -> ReplyKeyboardMarkup:
     back_button = KeyboardButton(text=LEXICON_RUS['back'])
     keyboard = ReplyKeyboardMarkup(keyboard=[[back_button]], resize_keyboard=True)
+    return keyboard
+
+
+def pagination_keyboard(*buttons: str) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    buttons = [InlineKeyboardButton(text=LEXICON_RUS.get(button, button), callback_data=button) for button in buttons]
+    builder.row(*buttons)
+    return builder.as_markup()
+
+
+def create_pagination_keyboard(page_number: int, total_pages: int) -> InlineKeyboardMarkup:
+    middle_button = f'{page_number}/{total_pages}'
+    if page_number == 1:
+        return pagination_keyboard(middle_button, 'forward')
+    elif 1 < page_number < total_pages:
+        return pagination_keyboard('backward', middle_button, 'forward')
+    return pagination_keyboard('backward', middle_button)
+
+
+def start_reading_papers_keyboard() -> ReplyKeyboardMarkup:
+    read_button = KeyboardButton(text=LEXICON_RUS['read'])
+    back_button = KeyboardButton(text=LEXICON_RUS['back'])
+
+    keyboard = ReplyKeyboardMarkup(keyboard=[[read_button, back_button]], resize_keyboard=True)
     return keyboard

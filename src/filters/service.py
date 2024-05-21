@@ -27,14 +27,3 @@ def validate_numbers_span_call_parameters(message: Message, pattern: str, lower_
     if lower_bound >= lower_bound_parameter or upper_bound_parameter >= upper_bound:
         return False
     return {'valid_parameters': [lower_bound_parameter, upper_bound_parameter]}
-    # msg = filtered_data[0]
-    # if '-' in msg:
-    #     years_distance = msg.split('-')
-    #     lower_date, upper_date = sorted(years_distance)
-    #     # change filtered data
-    #     filtered_data = [lower_date, upper_date]
-    # else:
-    #     lower_date = upper_date = int(filtered_data[0])
-    # if lower_bound >= int(lower_date) or int(upper_date) >= upper_bound:
-    #     return False
-    # return {'valid_parameters': filtered_data}

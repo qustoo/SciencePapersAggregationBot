@@ -14,8 +14,7 @@ from src.keybords.service import (finished_entering_parameters_keyboards,
 from src.lexicons.lexicon_rus import LEXICON_RUS
 from src.states.papers_parameters_states import \
     ScienceSearchingParametersStates
-from src.utils.states_enums import StatesName
-from src.utils.states_utils import (update_state_data,
+from src.utils.states_utils import (StatesName, update_state_data,
                                     upload_data_and_reset_state)
 
 router = Router()
@@ -181,6 +180,6 @@ async def finish_entering_parameters(message: Message, state: FSMContext, databa
         ScienceSearchingParametersStates.pages
     )
 )
-async def incorrect_terms_parameters(message: Message, state: FSMContext):
+async def incorrect_terms_parameters(message: Message):
     await message.answer(text='Кажется вы ввели неправильные данные!\n\n'
                               'Выберите пункт в меню и попробуйте снова!\n\n')

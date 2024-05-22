@@ -9,13 +9,13 @@ LOWER_BOUND_PAGES = 0
 UPPER_BOUND_PAGES = 250
 PARAMETER_NOT_SET = '[ДАННЫЕ ОТСУТСТВУЮТ]'
 HOST = 'https://api.openalex.org'
-AUTHORS_BY_NAME = '/authors?filter=display_name.search:{}'
-SOURCES_BY_NAME = '/sources?filter=display_name.search:{}'
-FILTER_TERMS = 'filter=abstract.search:{}'
-FILTER_DATES = 'filter=from_publication_date:{}&filter=to_publication_date:{}'
-FILTER_AUTHOR = 'filter=authorships.author.id:{}'
-FILTER_SOURCE = 'filter=best_oa_location.source.id:{}'
-FILTER_OA = 'filter=open_access.is_oa:{}'
+AUTHORS_BY_NAME = '/autocomplete/authors?q={}'
+SOURCES_BY_NAME = '/autocomplete/sources?q={}'
+FILTER_TERMS = 'abstract.search:{}'
+FILTER_DATES = 'from_publication_date:{},to_publication_date:{}'
+FILTER_AUTHOR = 'authorships.author.id:{}'
+FILTER_SOURCE = 'best_oa_location.source.id:{}'
+FILTER_OA = 'open_access.is_oa:{}'
 SCIENCE_PAPER_INFO_PATTERN = """
 Link = {link}
 Title = {title}

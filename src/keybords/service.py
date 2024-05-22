@@ -45,7 +45,9 @@ def finished_entering_parameters_keyboards() -> ReplyKeyboardMarkup:
 def pagination_keyboard(*buttons: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     buttons = [InlineKeyboardButton(text=LEXICON_RUS.get(button, button), callback_data=button) for button in buttons]
+    add_bookmark_button = [InlineKeyboardButton(text=LEXICON_RUS['add_to_bookmarks'], callback_data='add_to_bookmarks')]
     builder.row(*buttons)
+    builder.row(*add_bookmark_button)
     return builder.as_markup()
 
 
@@ -64,3 +66,39 @@ def start_reading_papers_keyboard() -> ReplyKeyboardMarkup:
 
     keyboard = ReplyKeyboardMarkup(keyboard=[[read_button, back_button]], resize_keyboard=True)
     return keyboard
+
+
+def create_bookmarks_keyboard(*bookmarks) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    for bookmark_number, bookmark_data in enumerate(bookmarks, start=1):
+        bookmark_url, bookmark_title = bookmark_data
+        builder.row(InlineKeyboardButton(
+            text=f'#{bookmark_number} \n\n {bookmark_title}',
+            url=bookmark_url,
+            callback_data=str(bookmark_url)))
+    builder.row(
+        InlineKeyboardButton(
+            text=LEXICON_RUS['edit_bookmarks_button'],
+            callback_data='edit_bookmarks'
+        ),
+        InlineKeyboardButton(
+            text=LEXICON_RUS['cancel'],
+            callback_data='cancel_bookmarks'
+        ),
+        width=2
+    )
+    return builder.as_markup()
+
+
+def create_edit_keyboard(*bookmarks) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    for bookmark_number, bookmark_data in enumerate(bookmarks, start=1):
+        bookmark_url, bookmark_title = bookmark_data
+        builder.row(InlineKeyboardButton(text=LEXICON_RUS['del'] + f'{bookmark_number} link = {bookmark_url}',
+                                         callback_data=f'{bookmark_url}_delete'))
+    builder.row(InlineKeyboardButton(
+        text=LEXICON_RUS['cancel'],
+        callback_data='cancel_bookmarks'
+    ))
+    return builder.as_markup()

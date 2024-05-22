@@ -1,5 +1,3 @@
-START_MESSAGE = 'Привет!\nЭтот бот умеет агрегировать информацию из различных источников!'
-HELP_MESSAGE = 'Привет!\nСкоро тут будет будет инфа по помощи!'
 LOGGING_FORMAT = '[%(asctime)s] #%(levelname)-8s %(filename)s:%(lineno)d - %(name)s - %(message)s'
 LOWER_BOUND_YEARS = 1970
 UPPER_BOUND_YEARS = 2024
@@ -29,3 +27,5 @@ ENTERED_PARAMETERS_PATTERN = """
 Год выпуска: от %s до %s\n
 Количество страниц: от %s до %s\n
 """
+OPEN_ALEX_URL_PATTERN = """
+^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9(")@:%_\\+.~#?&\\/=]*)$"""

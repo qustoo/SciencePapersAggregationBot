@@ -9,13 +9,16 @@ def get_papers_information(papers_models: WorksFilterResults) -> list[str]:
         title = paper.title
         papers.append(SCIENCE_PAPER_INFO_PATTERN.format(link=link, title=title))
     return papers
-#
-#
+
+
+# from api import ExternalScienceAPI
+# import asyncio
+# import pprint
+# 
 # async def main():
 #     api_service = ExternalScienceAPI()
 #     papers_models = await api_service.get_works(year_begin=2010, year_end=2010)
-#
 #     papers = get_papers_information(papers_models=papers_models)
-#
-#
+#     pprint.pprint(papers)
+# 
 # asyncio.run(main())

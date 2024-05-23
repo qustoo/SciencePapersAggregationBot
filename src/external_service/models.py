@@ -13,18 +13,18 @@ class AuthorsFilterResults(BaseModel):
 
 class SourceData(BaseModel):
     id: str
-    display_name: str
+    display_name: Optional[str] = None
     type: str
 
 
 class SourcesFilterResults(BaseModel):
-    results: list[SourceData]
+    results: Optional[list[SourceData]]
 
 
 class AuthorshipData(BaseModel):
-    author_position: str  #first
+    author_position: str
     raw_author_name: str
-    countries: list[str]  # [0]
+    countries: list[str]
 
     @computed_field
     def name_plus_country(self) -> str:
@@ -39,6 +39,16 @@ class Biblio(BaseModel):
     first_page: Optional[str] = None
     last_page: Optional[str] = None
 
+    @computed_field
+    def page_count(self) -> int:
+        if self.first_page and self.last_page: 
+            try:
+                return int(self.first_page) - int(self.last_page) + 1
+            except ValueError:
+                return 0
+            
+        return 0
+    
 
 class TopicData(BaseModel):
     id: str
@@ -62,14 +72,15 @@ class WorkData(BaseModel):
     primary_topic: Optional[TopicData]  # тема вытаскивается через .display_name
     authorships: list[AuthorshipData]  # тут из каждого автора доставай .name_plus_coutry
     best_oa_location: Optional[OaLocationData]  # доставай название источника через .source.display_name
-    biblio: Biblio  # хранит номера страниц
+    biblio: Optional[Biblio]  # хранит номера страниц
     abstract_inverted_index: Optional[dict[str, list[int]]]  # плохой абстракт
 
     @computed_field
     def abstract(self) -> str:  # хороший абстракт
         if self.abstract_inverted_index is not None:
             l_inv = [(w, p) for w, pos in self.abstract_inverted_index.items() for p in pos]
-            return " ".join(map(lambda x: x[0], sorted(l_inv, key=lambda x: x[1])))
+            sorted_map = map(lambda x: x[0], sorted(l_inv, key=lambda x: x[1]))
+            return " ".join(sorted_map)
 
 
 class WorksFilterResults(BaseModel):

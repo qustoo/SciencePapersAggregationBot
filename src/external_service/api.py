@@ -51,4 +51,14 @@ class ExternalScienceAPI:
                                    f'&per_page=200') as resp:
 
                 json = await resp.json()
-                return WorksFilterResults(**json).results
+                partly_filtered_works = WorksFilterResults(**json).results
+                filtered_works = []
+
+                if pages_min and pages_max and pages_min <= pages_max:
+                    for result in partly_filtered_works:
+                        pages = result.biblio.page_count
+                        if pages_min <= pages <= pages_max or pages == 0:
+                            filtered_works.append(result)
+                    return filtered_works
+                
+                return partly_filtered_works

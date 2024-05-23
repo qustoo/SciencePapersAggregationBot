@@ -22,9 +22,9 @@ class SourcesFilterResults(BaseModel):
 
 
 class AuthorshipData(BaseModel):
-    author_position: str  #first
+    author_position: str
     raw_author_name: str
-    countries: list[str]  # [0]
+    countries: list[str]
 
     @computed_field
     def name_plus_country(self) -> str:
@@ -69,7 +69,8 @@ class WorkData(BaseModel):
     def abstract(self) -> str:  # хороший абстракт
         if self.abstract_inverted_index is not None:
             l_inv = [(w, p) for w, pos in self.abstract_inverted_index.items() for p in pos]
-            return " ".join(map(lambda x: x[0], sorted(l_inv, key=lambda x: x[1])))
+            sorted_map = map(lambda x: x[0], sorted(l_inv, key=lambda x: x[1]))
+            return " ".join(sorted_map)
 
 
 class WorksFilterResults(BaseModel):

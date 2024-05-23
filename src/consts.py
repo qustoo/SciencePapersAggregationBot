@@ -19,6 +19,13 @@ FILTER_OA = 'open_access.is_oa:{}'
 SCIENCE_PAPER_INFO_PATTERN = """
 Link = {link}
 Title = {title}
+Abstract = {abstract}
+Article type = {type}
+Year = {year}
+Cites = {cites}
+Topic = {topic} 
+Authors = {authors}
+Source = {sources}
 """
 ENTERED_PARAMETERS_PATTERN = """
 Ключевые слова: %s\n

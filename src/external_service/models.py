@@ -18,7 +18,7 @@ class SourceData(BaseModel):
 
 
 class SourcesFilterResults(BaseModel):
-    results: list[SourceData]
+    results: Optional[list[SourceData]]
 
 
 class AuthorshipData(BaseModel):

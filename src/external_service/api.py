@@ -43,10 +43,10 @@ class ExternalScienceAPI:
         date_begin, date_end = f'{year_begin}-01-01', f'{year_end}-12-31'
         async with aiohttp.ClientSession() as session:
             async with session.get(f'{HOST}/works?filter='
-                                   f'{FILTER_TERMS.format(terms + ',') if terms else ''}'
-                                   f'{FILTER_AUTHOR.format(author_id + ',') if author_id else ''}'
-                                   f'{FILTER_SOURCE.format(source_id + ',') if source_id else ''}'
-                                   f'{FILTER_DATES.format(date_begin, date_end + ',') if year_begin and year_end else ''}'
+                                   f'{FILTER_TERMS.format(terms + ",") if terms else ""}'
+                                   f'{FILTER_AUTHOR.format(author_id + ",") if author_id else ""}'
+                                   f'{FILTER_SOURCE.format(source_id + ",") if source_id else ""}'
+                                   f'{FILTER_DATES.format(date_begin, date_end + ",") if year_begin and year_end else ""}'
                                    f'{FILTER_OA.format(True)}'
                                    f'&per_page=200') as resp:
 

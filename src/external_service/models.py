@@ -13,7 +13,7 @@ class AuthorsFilterResults(BaseModel):
 
 class SourceData(BaseModel):
     id: str
-    display_name: str
+    display_name: Optional[str] = None
     type: str
 
 

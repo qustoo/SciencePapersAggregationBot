@@ -3,7 +3,7 @@ import re
 from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery
 
-from src.consts import OPEN_ALEX_URL_PATTERN
+from src.consts import URL_PATTERN
 
 
 class IsDigitCallbackData(BaseFilter):
@@ -14,7 +14,7 @@ class IsDigitCallbackData(BaseFilter):
 class IsDelBookmarkCallbackData(BaseFilter):
     async def __call__(self, callback: CallbackQuery) -> bool | dict[str, str]:
         link_data, del_ends = callback.data.split('_')
-        matched_link = re.match(pattern=OPEN_ALEX_URL_PATTERN, string=link_data)
+        matched_link = re.match(pattern=URL_PATTERN, string=link_data)
         if matched_link and del_ends == 'delete':
             return {'paper_link': link_data}
         return False

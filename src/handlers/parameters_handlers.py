@@ -14,10 +14,18 @@ from src.keybords.service import (finished_entering_parameters_keyboards,
 from src.lexicons.lexicon_rus import LEXICON_RUS
 from src.states.papers_parameters_states import \
     ScienceSearchingParametersStates
-from src.utils.states_utils import (StatesName, update_state_data,
-                                    upload_data_and_reset_state)
+from src.utils.states_utils import StatesName, update_state_data
 
 router = Router()
+
+
+# fill parameters
+@router.message(F.text == LEXICON_RUS['fill_parameters'])
+async def base_searching(message: Message):
+    await message.answer(
+        text='Выберите соотвествующее поле для поиска статей и введите данные!',
+        reply_markup=get_searching_parameters_keyboard()
+    )
 
 
 # terms
@@ -162,12 +170,13 @@ async def back_to_basic_keyboard(message: Message, state: FSMContext):
 # finish entering parameters
 @router.message(StateFilter(default_state), F.text == LEXICON_RUS['finished'])
 async def finish_entering_parameters(message: Message, state: FSMContext, database: AsyncBotDatabase):
-    await upload_data_and_reset_state(
-        user_id=message.from_user.id,
-        state=state,
-        database=database
-    )
-    await message.answer(text='finish entering parameters message', reply_markup=get_started_keyboard())
+    state_data = await state.get_data()
+    if state_data:
+        await database.insert_data(table_name='parameters', inserted_data=state_data, user_id=message.from_user.id)
+        await message.answer(text=LEXICON_RUS['save_parameters'], reply_markup=get_started_keyboard())
+    else:
+        await message.answer(text=LEXICON_RUS['empty_parameters'], reply_markup=get_started_keyboard())
+    await state.set_state(default_state)
 
 
 # invalid behavior
@@ -181,5 +190,5 @@ async def finish_entering_parameters(message: Message, state: FSMContext, databa
     )
 )
 async def incorrect_terms_parameters(message: Message):
-    await message.answer(text='Кажется вы ввели неправильные данные!\n\n'
-                              'Выберите пункт в меню и попробуйте снова!\n\n')
+    await message.answer(text='Кажется вы ввели неправильные ключевые данные для поиска статей!\n\n'
+                              'Выберите поле для поиска в меню и попробуйте снова ввести данные!\n\n')

@@ -62,7 +62,7 @@ class WorkData(BaseModel):
     id: str  # адрес страницы на опеналексе
     doi: Optional[str]  # ссылка на пдф
     title: Optional[str]  # название
-    type: str  # тип (статья, ревью и т.д.)
+    type: Optional[str]  # тип (статья, ревью и т.д.)
     publication_date: str  # дата в формате гггг-мм-дд
     has_fulltext: bool
     cited_by_count: int  # число цитирований

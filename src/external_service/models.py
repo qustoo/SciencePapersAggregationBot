@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, computed_field, Field
 
 
 class AuthorData(BaseModel):
@@ -14,7 +14,7 @@ class AuthorsFilterResults(BaseModel):
 class SourceData(BaseModel):
     id: str
     display_name: Optional[str] = None
-    type: str
+    type: Optional[str] = 'no type provided'
 
 
 class SourcesFilterResults(BaseModel):
@@ -62,7 +62,7 @@ class WorkData(BaseModel):
     id: str  # адрес страницы на опеналексе
     doi: Optional[str]  # ссылка на пдф
     title: Optional[str]  # название
-    type: Optional[str]  # тип (статья, ревью и т.д.)
+    type: Optional[str] = 'no type provided' # тип (статья, ревью и т.д.)
     publication_date: str  # дата в формате гггг-мм-дд
     has_fulltext: bool
     cited_by_count: int  # число цитирований

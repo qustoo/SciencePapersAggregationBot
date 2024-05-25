@@ -1,6 +1,7 @@
 import aiohttp
 
-from src.consts import (AUTHORS_BY_NAME, FILTER_AUTHOR, FILTER_DATES,
+from src.consts import (AUTHORS_BY_NAME, BASE_OPEN_ALEX,
+                        COUNT_SEARCHING_PAPERS, FILTER_AUTHOR, FILTER_DATES,
                         FILTER_OA, FILTER_SOURCE, FILTER_TERMS, HOST,
                         SOURCES_BY_NAME)
 from src.external_service.models import (AuthorsFilterResults,
@@ -36,19 +37,19 @@ class ExternalScienceAPI:
             pages_min: int = '',
             pages_max: int = ''
     ):
-        author_id = (await get_author_id(author_name)).replace('https://openalex.org/',
-                                                               '') if author_name else ''
-        source_id = (await get_source_id(source_name)).replace('https://openalex.org/',
-                                                               '') if source_name else ''
+        author_id = (await get_author_id(author_name)).replace(BASE_OPEN_ALEX, '') if author_name else ''
+        source_id = (await get_source_id(source_name)).replace(BASE_OPEN_ALEX, '') if source_name else ''
         date_begin, date_end = f'{year_begin}-01-01', f'{year_end}-12-31'
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'{HOST}/works?filter='
-                                   f'{FILTER_TERMS.format(terms + ",") if terms else ""}'
-                                   f'{FILTER_AUTHOR.format(author_id + ",") if author_id else ""}'
-                                   f'{FILTER_SOURCE.format(source_id + ",") if source_id else ""}'
-                                   f'{FILTER_DATES.format(date_begin, date_end + ",") if year_begin and year_end else ""}'
-                                   f'{FILTER_OA.format(True)}'
-                                   f'&per_page=200') as resp:
+            async with session.get(
+                    f'{HOST}/works?filter='
+                    f'{FILTER_TERMS.format(terms + ",") if terms else ""}'
+                    f'{FILTER_AUTHOR.format(author_id + ",") if author_id else ""}'
+                    f'{FILTER_SOURCE.format(source_id + ",") if source_id else ""}'
+                    f'{FILTER_DATES.format(date_begin, date_end + ",") if year_begin and year_end else ""}'
+                    f'{FILTER_OA.format(True)}'
+                    f'&per_page={COUNT_SEARCHING_PAPERS}'
+            ) as resp:
 
                 json = await resp.json()
                 partly_filtered_works = WorksFilterResults(**json).results
@@ -60,5 +61,5 @@ class ExternalScienceAPI:
                         if pages_min <= pages <= pages_max or pages == 0:
                             filtered_works.append(result)
                     return filtered_works
-                
+
                 return partly_filtered_works

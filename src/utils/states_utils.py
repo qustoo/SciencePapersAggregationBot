@@ -1,9 +1,6 @@
 from enum import Enum
 
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import default_state
-
-from src.database import AsyncBotDatabase
 
 
 class StatesName(Enum):
@@ -12,12 +9,6 @@ class StatesName(Enum):
     AUTHORS = 'authors'
     YEARS = ('min_years', 'max_years')
     PAGES = ('min_pages', 'max_pages')
-
-
-async def upload_data_and_reset_state(user_id: int, state: FSMContext, database: AsyncBotDatabase):
-    state_data = await state.get_data()
-    await database.insert_data(table_name='parameters', inserted_data=state_data, user_id=user_id)
-    await state.set_state(default_state)
 
 
 async def update_state_data(state_name: StatesName, concatenated: bool, parameters: list[str | int], state: FSMContext):

@@ -68,7 +68,14 @@ class AsyncBotDatabase:
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               user_id INTEGER,
               link TEXT,
-              title TEXT
+              doi TEXT,
+              title TEXT,
+              abstract TEXT,
+              publication_date TEXT,
+              cites INT,
+              topic TEXT,
+              authors TEXT,
+              sources TEXT
               )
               """
         await self.execute(query=query, commit=True)

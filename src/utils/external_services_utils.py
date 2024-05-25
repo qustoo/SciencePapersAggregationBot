@@ -1,18 +1,38 @@
+from dataclasses import dataclass
+
 from src.consts import SCIENCE_PAPER_INFO_PATTERN
 from src.external_service.models import WorkData
 
 
-def get_papers_information(paper: WorkData) -> str:
-    return SCIENCE_PAPER_INFO_PATTERN.format(
-        link=paper.id,
-        title=paper.title,
-        abstract=paper.abstract,
-        type=paper.type,
-        year=paper.publication_date,
-        cites=paper.cited_by_count,
-        topic=paper.primary_topic.display_name,
-        authors='\n'.join(item.name_plus_country for item in paper.authorships),
-        sources=paper.best_oa_location.source.display_name
-    )
+@dataclass
+class PaperData:
+    representation: str
+    link: str
 
 
+def get_papers_representation(papers: list[WorkData | tuple]) -> list[PaperData]:
+    papers_data = []
+    for paper in papers:
+        if isinstance(paper, WorkData):
+            papers_data.append(PaperData(
+                representation=SCIENCE_PAPER_INFO_PATTERN.format(
+                    paper.id,
+                    paper.doi,
+                    paper.title,
+                    paper.abstract,
+                    paper.publication_date,
+                    paper.cited_by_count,
+                    paper.topic,
+                    paper.authors_countries_info,
+                    paper.sources
+
+                ),
+                link=paper.id
+            ))
+        elif isinstance(paper, tuple):
+            paper_link, *paper_other_data = paper
+            papers_data.append(PaperData(
+                representation=SCIENCE_PAPER_INFO_PATTERN.format(paper_link, *paper_other_data),
+                link=paper_link,
+            ))
+    return papers_data

@@ -27,12 +27,10 @@ class AuthorshipData(BaseModel):
     countries: list[str]
 
     @computed_field
+    @property
     def name_plus_country(self) -> str:
-        if len(self.countries) != 0:
-            countries = ', '.join(self.countries)
-            return f'{self.raw_author_name} ({countries})'
-
-        return self.raw_author_name + ' (Unknown)'
+        countries = ', '.join(self.countries) or ' (Unknown country)'
+        return f'{self.raw_author_name} ({countries})'
 
 
 class Biblio(BaseModel):
@@ -40,15 +38,14 @@ class Biblio(BaseModel):
     last_page: Optional[str] = None
 
     @computed_field
+    @property
     def page_count(self) -> int:
-        if self.first_page and self.last_page: 
-            try:
-                return int(self.first_page) - int(self.last_page) + 1
-            except ValueError:
-                return 0
-            
-        return 0
-    
+        try:
+            page_count = int(self.last_page) - int(self.first_page)
+        except (ValueError, TypeError):
+            page_count = 0
+        return page_count
+
 
 class TopicData(BaseModel):
     id: str
@@ -76,12 +73,32 @@ class WorkData(BaseModel):
     abstract_inverted_index: Optional[dict[str, list[int]]]  # плохой абстракт
 
     @computed_field
+    @property
     def abstract(self) -> str:  # хороший абстракт
         if self.abstract_inverted_index is not None:
             l_inv = [(w, p) for w, pos in self.abstract_inverted_index.items() for p in pos]
             sorted_map = map(lambda x: x[0], sorted(l_inv, key=lambda x: x[1]))
             return " ".join(sorted_map)
 
+    @computed_field
+    @property
+    def authors_countries_info(self) -> str:
+        return '\n'.join(item.name_plus_country for item in self.authorships)
 
+    @computed_field
+    @property
+    def sources(self) -> str:
+        oa_location = self.best_oa_location
+        if oa_location and oa_location.source and oa_location.source.display_name:
+            return oa_location.source.display_name
+        return 'no sources'
+
+    @computed_field
+    @property
+    def topic(self) -> str:
+        primary_topic = self.primary_topic
+        if primary_topic and primary_topic.display_name:
+            return primary_topic.display_name
+        return 'no topics'
 class WorksFilterResults(BaseModel):
     results: list[WorkData]

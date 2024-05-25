@@ -6,7 +6,7 @@ from src.lexicons.lexicon_rus import LEXICON_RUS
 
 
 def get_started_keyboard() -> ReplyKeyboardMarkup:
-    fill_params = KeyboardButton(text=LEXICON_RUS['start_fill_based_parameters'])
+    fill_params = KeyboardButton(text=LEXICON_RUS['fill_parameters'])
     help_button = KeyboardButton(text=LEXICON_RUS['help'])
     entered_parameters = KeyboardButton(text=LEXICON_RUS['entered_parameters'])
     fetch_science_papers_button = KeyboardButton(text=LEXICON_RUS['run_aggregation_papers'])
@@ -68,6 +68,14 @@ def start_reading_papers_keyboard() -> ReplyKeyboardMarkup:
     return keyboard
 
 
+def start_reading_own_papers_keyboard() -> ReplyKeyboardMarkup:
+    read_button = KeyboardButton(text=LEXICON_RUS['read_own_papers'])
+    back_button = KeyboardButton(text=LEXICON_RUS['back'])
+
+    keyboard = ReplyKeyboardMarkup(keyboard=[[read_button, back_button]], resize_keyboard=True)
+    return keyboard
+
+
 def create_bookmarks_keyboard(*bookmarks) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
@@ -95,7 +103,7 @@ def create_edit_keyboard(*bookmarks) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for bookmark_number, bookmark_data in enumerate(bookmarks, start=1):
         bookmark_url, bookmark_title = bookmark_data
-        builder.row(InlineKeyboardButton(text=LEXICON_RUS['del'] + f'{bookmark_number} link = {bookmark_url}',
+        builder.row(InlineKeyboardButton(text=LEXICON_RUS['del'] + f'#{bookmark_number} \n\n {bookmark_title}',
                                          callback_data=f'{bookmark_url}_delete'))
     builder.row(InlineKeyboardButton(
         text=LEXICON_RUS['cancel'],

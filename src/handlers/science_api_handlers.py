@@ -5,13 +5,13 @@ from aiogram.types import CallbackQuery, Message
 from src.consts import ENTERED_PARAMETERS_PATTERN, PARAMETER_NOT_SET
 from src.database import AsyncBotDatabase
 from src.external_service.api import ExternalScienceAPI
-from src.utils.external_services_utils import get_papers_information
 from src.filters.bookmarks_filters import IsDelBookmarkCallbackData
 from src.keybords.service import (create_edit_keyboard,
                                   create_pagination_keyboard,
                                   get_started_keyboard,
                                   start_reading_papers_keyboard)
 from src.lexicons.lexicon_rus import LEXICON_RUS
+from src.utils.external_services_utils import get_papers_representation
 from src.utils.papers_utils import add_papers_to_database
 
 router = Router()
@@ -25,8 +25,11 @@ async def check_entered_parameters(message: Message, database: AsyncBotDatabase)
         filter_columns={'user_id': message.from_user.id},
         fetchone=True,
     )
-    not_null_parameters = tuple(parameter if parameter else PARAMETER_NOT_SET for parameter in parameters)
-    await message.answer(text=ENTERED_PARAMETERS_PATTERN % not_null_parameters)
+    if parameters:
+        not_null_parameters = tuple(parameter if parameter else PARAMETER_NOT_SET for parameter in parameters)
+        await message.answer(text=ENTERED_PARAMETERS_PATTERN % not_null_parameters)
+    else:
+        await message.answer(text=LEXICON_RUS['no_one_saved_parameters'])
 
 
 @router.message(F.text == LEXICON_RUS['run_aggregation_papers'])
@@ -42,10 +45,12 @@ async def search_science_api(
         filter_columns={'user_id': message.from_user.id},
         fetchone=True
     )
+
     raw_science_papers = await external_service.get_works(*parameters)
     await add_papers_to_database(papers=raw_science_papers, database=database, user_id=message.from_user.id)
+    represented_science_papers = get_papers_representation(raw_science_papers)
 
-    await state.update_data(papers=raw_science_papers)
+    await state.update_data(papers_data=represented_science_papers)
     await message.answer(
         text=f'Найдено {len(raw_science_papers)} записей.\n\n'
              'Чтобы начать чтение - выберите поле на клавиатуре',
@@ -54,13 +59,15 @@ async def search_science_api(
 
 
 @router.message(F.text == LEXICON_RUS['read'])
-async def start_reading(message: Message, database: AsyncBotDatabase, state: FSMContext):
+async def process_start_reading(message: Message, database: AsyncBotDatabase, state: FSMContext):
     state_data = await state.get_data()
-    papers = state_data['papers']
-    page_number, total_pages = 1, len(papers) - 1
-    paper = papers[page_number]
-    paper_information = get_papers_information(paper)
-    await state.update_data(paper_link=paper.id)
+    papers_data = state_data['papers_data']
+    page_number, total_pages = 1, len(papers_data) - 1
+
+    paper = papers_data[page_number]
+    paper_representation, paper_link = paper.representation, paper.link
+
+    await state.update_data(paper_link=paper_link)
 
     await database.insert_data(
         table_name='page_information',
@@ -69,69 +76,42 @@ async def start_reading(message: Message, database: AsyncBotDatabase, state: FSM
     )
 
     await message.answer(
-        text=paper_information,
+        text=paper_representation,
         reply_markup=create_pagination_keyboard(
             page_number=page_number,
             total_pages=total_pages
         ))
 
 
-@router.callback_query(F.data == 'forward')
-async def process_forward_press(callback: CallbackQuery, database: AsyncBotDatabase, state: FSMContext) -> None:
+@router.callback_query(F.data.in_({'forward', 'backward'}))
+async def process_forward_backward_press(callback: CallbackQuery, database: AsyncBotDatabase, state: FSMContext):
     state_data = await state.get_data()
-    papers = state_data['papers']
-
+    papers_data = state_data['papers_data']
     page_number, total_pages = await database.fetch_data(
         table_name='page_information',
         searching_columns=['current_page', 'total_pages'],
         filter_columns={'user_id': callback.from_user.id},
         fetchone=True,
     )
-    if page_number < total_pages:
+    if callback.data == 'forward':
         page_number += 1
-        paper = papers[page_number]
-        paper_information = get_papers_information(paper)
-        await state.update_data(paper_link=paper.id)
-
-        await database.update_data(
-            table_name='page_information',
-            updated_data={'current_page': page_number},
-            user_id=callback.from_user.id
-        )
-
-        await callback.message.edit_text(
-            text=paper_information,
-            reply_markup=create_pagination_keyboard(page_number=page_number, total_pages=total_pages)
-        )
-    await callback.answer()
-
-
-@router.callback_query(F.data == 'backward')
-async def process_backward_press(callback: CallbackQuery, database: AsyncBotDatabase, state: FSMContext) -> None:
-    state_data = await state.get_data()
-    papers = state_data['papers']
-    page_number, total_pages = await database.fetch_data(
-        table_name='page_information',
-        searching_columns=['current_page', 'total_pages'],
-        filter_columns={'user_id': callback.from_user.id},
-        fetchone=True
-    )
-    if page_number > 1:
+    elif callback.data == 'backward':
         page_number -= 1
-        paper = papers[page_number]
-        paper_information = get_papers_information(paper)
-        await state.update_data(paper_link=paper.id)
 
-        await database.update_data(
-            table_name='page_information',
-            updated_data={'current_page': page_number},
-            user_id=callback.message.from_user.id
-        )
-        await callback.message.edit_text(
-            text=paper_information,
-            reply_markup=create_pagination_keyboard(page_number=page_number, total_pages=total_pages)
-        )
-    await callback.answer()
+    paper = papers_data[page_number]
+    paper_representation, paper_link = paper.representation, paper.link
+
+    await state.update_data(paper_link=paper_link)
+    await database.update_data(
+        table_name='page_information',
+        updated_data={'current_page': page_number},
+        user_id=callback.from_user.id
+    )
+
+    await callback.message.edit_text(
+        text=paper_representation,
+        reply_markup=create_pagination_keyboard(page_number=page_number, total_pages=total_pages)
+    )
 
 
 @router.callback_query(F.data == 'add_to_bookmarks')
@@ -187,6 +167,31 @@ async def delete_bookmark(callback: CallbackQuery, paper_link: str, database: As
         removed_data={'paper_id': paper_id, 'user_id': callback.from_user.id}
     )
     await process_edit_press(callback=callback, database=database)
+
+
+@router.message(F.text == LEXICON_RUS['read_own_papers'])
+async def process_read_own_papers(message: Message, database: AsyncBotDatabase, state: FSMContext):
+    state_data = await state.get_data()
+    papers_data = state_data['papers_data']
+    page_number, total_pages = 1, len(papers_data) - 1
+
+    paper = papers_data[page_number]
+    paper_representation, paper_link = paper.representation, paper.link
+
+    await state.update_data(paper_link=paper_link)
+
+    await database.insert_data(
+        table_name='page_information',
+        inserted_data={'current_page': page_number, 'total_pages': total_pages},
+        user_id=message.from_user.id
+    )
+
+    await message.answer(
+        text=paper_representation,
+        reply_markup=create_pagination_keyboard(
+            page_number=page_number,
+            total_pages=total_pages
+        ))
 
 
 @router.message(F.text == LEXICON_RUS['back'])

@@ -16,23 +16,24 @@ FILTER_DATES = 'from_publication_date:{},to_publication_date:{}'
 FILTER_AUTHOR = 'authorships.author.id:{}'
 FILTER_SOURCE = 'best_oa_location.source.id:{}'
 FILTER_OA = 'open_access.is_oa:{}'
+BASE_OPEN_ALEX = 'https://openalex.org/'
+COUNT_SEARCHING_PAPERS = 50
+URL_PATTERN = r"https:\/\/[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+\/[A-Z0-9]+"
 SCIENCE_PAPER_INFO_PATTERN = """
-Link = {link}
-Title = {title}
-Abstract = {abstract}
-Article type = {type}
-Year = {year}
-Cites = {cites}
-Topic = {topic} 
-Authors = {authors}
-Source = {sources}
+Link = {0}
+Title = {1}
+Abstract = {2}
+Type = {3}
+Year = {4}
+Cites = {5}
+Topic = {6}
+Authors = {7}
+Sources = {8}
 """
 ENTERED_PARAMETERS_PATTERN = """
 Ключевые слова: %s\n
 Журнал/издание: %s\n
-Авторы: {%s}\n
+Авторы: %s\n
 Год выпуска: от %s до %s\n
 Количество страниц: от %s до %s\n
 """
-OPEN_ALEX_URL_PATTERN = """
-^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9(")@:%_\\+.~#?&\\/=]*)$"""

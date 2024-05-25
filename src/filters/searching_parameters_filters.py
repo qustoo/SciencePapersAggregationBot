@@ -5,7 +5,8 @@ from src.consts import (LOWER_BOUND_PAGES, LOWER_BOUND_YEARS, MAX_TERMS_COUNT,
                         PAGES_REGEX_PATTERN, TEXT_REGEX_PATTERN,
                         UPPER_BOUND_PAGES, UPPER_BOUND_YEARS,
                         YEARS_REGEX_PATTERN)
-from src.utils.filters_utils import validate_numbers_span_call_parameters, validate_text_call_parameters
+from src.utils.filters_utils import (validate_numbers_span_call_parameters,
+                                     validate_text_call_parameters)
 
 
 class TextSearchingParametersFilters(BaseFilter):

@@ -5,7 +5,16 @@ async def add_papers_to_database(papers: list, database: AsyncBotDatabase, user_
     for paper in papers:
         await database.insert_data(
             table_name='papers',
-            # внести все параметры
-            inserted_data={'link': paper.id, 'title': paper.title},
+            inserted_data={
+                'link': paper.id,
+                'doi': paper.doi,
+                'title': paper.title,
+                'abstract': paper.abstract,
+                'publication_date': paper.publication_date,
+                'cites': paper.cited_by_count,
+                'topic': paper.topic,
+                'authors': paper.authors_countries_info,
+                'sources': paper.sources
+            },
             user_id=user_id,
         )

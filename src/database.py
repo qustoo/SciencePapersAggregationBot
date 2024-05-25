@@ -29,12 +29,6 @@ class AsyncBotDatabase:
 
             return returned_result
 
-    async def create_tables(self):
-        await self.create_table_parameters()
-        await self.create_table_page_information()
-        await self.create_table_papers()
-        await self.create_table_bookmarks()
-
     async def create_table_parameters(self):
         query = """
               CREATE TABLE IF NOT EXISTS parameters( 
@@ -91,8 +85,17 @@ class AsyncBotDatabase:
               """
         await self.execute(query=query, commit=True)
 
+    async def create_tables(self):
+        await self.create_table_parameters()
+        await self.create_table_page_information()
+        await self.create_table_papers()
+        await self.create_table_bookmarks()
+
     async def drop_tables(self):
         query = """
+        DROP TABLE IF EXISTS parameters
+        DROP TABLE IF EXISTS page_information        
+        DROP TABLE IF EXISTS papers
         DROP TABLE IF EXISTS bookmarks
         """
         await self.execute(query=query, commit=True)

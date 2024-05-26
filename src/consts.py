@@ -21,14 +21,16 @@ COUNT_SEARCHING_PAPERS = 50
 URL_PATTERN = r"https:\/\/[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+\/[A-Z0-9]+"
 SCIENCE_PAPER_INFO_PATTERN = """
 Link = {0}
-Title = {1}
-Abstract = {2}
-Type = {3}
-Year = {4}
-Cites = {5}
-Topic = {6}
-Authors = {7}
-Sources = {8}
+DOI = {1}
+Title = {2}
+Abstract = {3}
+Type = {4}
+Year = {5}
+Cites = {6}
+Topic = {7}
+Authors = {8}
+Sources = {9}
+Page count = {10}
 """
 ENTERED_PARAMETERS_PATTERN = """
 Ключевые слова: %s\n

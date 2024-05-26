@@ -65,11 +65,13 @@ class AsyncBotDatabase:
               doi TEXT,
               title TEXT,
               abstract TEXT,
+              type TEXT,
               publication_date TEXT,
               cites INT,
               topic TEXT,
               authors TEXT,
-              sources TEXT
+              sources TEXT,
+              page_count INT
               )
               """
         await self.execute(query=query, commit=True)

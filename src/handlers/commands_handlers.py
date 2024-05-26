@@ -46,7 +46,9 @@ async def process_papers_commands(message: Message, database: AsyncBotDatabase, 
     user_papers = await database.fetch_data(
         table_name='papers',
         searching_columns=[
-            'link', 'doi', 'title', 'abstract', 'publication_date', 'cites', 'topic', 'authors', 'sources'],
+            'link', 'doi', 'title', 'abstract', 'type', 'publication_date',
+            'cites', 'topic', 'authors', 'sources', 'page_count'
+        ],
         filter_columns={'user_id': message.from_user.id},
         fetchall=True
     )

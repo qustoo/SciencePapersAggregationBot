@@ -45,17 +45,22 @@ async def search_science_api(
         filter_columns={'user_id': message.from_user.id},
         fetchone=True
     )
+    if parameters:
+        raw_science_papers = await external_service.get_works(*parameters)
+        await add_papers_to_database(papers=raw_science_papers, database=database, user_id=message.from_user.id)
+        represented_science_papers = get_papers_representation(raw_science_papers)
 
-    raw_science_papers = await external_service.get_works(*parameters)
-    await add_papers_to_database(papers=raw_science_papers, database=database, user_id=message.from_user.id)
-    represented_science_papers = get_papers_representation(raw_science_papers)
-
-    await state.update_data(papers_data=represented_science_papers)
-    await message.answer(
-        text=f'Найдено {len(raw_science_papers)} записей.\n\n'
-             'Чтобы начать чтение - выберите поле на клавиатуре',
-        reply_markup=start_reading_papers_keyboard()
-    )
+        await state.update_data(papers_data=represented_science_papers)
+        await message.answer(
+            text=f'Найдено {len(raw_science_papers)} записей.\n\n'
+                 'Чтобы начать чтение - выберите поле на клавиатуре',
+            reply_markup=start_reading_papers_keyboard()
+        )
+    else:
+        await message.answer(
+            text='Не обнаружено параметров данных для поиска статей.\n\n Пожалуйста, введите их, выбрав поле в меню,'
+                 'и проверьте что они сохранены.\n\n'
+        )
 
 
 @router.message(F.text == LEXICON_RUS['read'])

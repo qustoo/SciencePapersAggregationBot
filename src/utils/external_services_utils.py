@@ -20,12 +20,13 @@ def get_papers_representation(papers: list[WorkData | tuple]) -> list[PaperData]
                     paper.doi,
                     paper.title,
                     paper.abstract,
+                    paper.type,
                     paper.publication_date,
                     paper.cited_by_count,
                     paper.topic,
                     paper.authors_countries_info,
-                    paper.sources
-
+                    paper.sources,
+                    paper.biblio.page_count
                 ),
                 link=paper.id
             ))
